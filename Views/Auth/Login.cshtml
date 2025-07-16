@@ -1,0 +1,200 @@
+﻿@{
+    ViewData["Title"] = "Đăng nhập";
+    var returnUrl = ViewData["ReturnUrl"] as string;
+}
+
+<style>
+    /* Custom CSS cho trang đăng nhập hiện đại, giống Netflix */
+    body {
+        font-family: 'Inter', sans-serif;
+        background-color: #141414; /* Nền tối tương tự Netflix */
+        color: #e5e5e5; /* Màu chữ sáng */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        margin: 0;
+        padding: 20px;
+        box-sizing: border-box;
+    }
+
+    .login-container {
+        background-color: #000000; /* Nền đen cho form */
+        padding: 40px;
+        border-radius: 10px;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+        width: 100%;
+        max-width: 400px;
+        text-align: center;
+    }
+
+    .login-container h2 {
+        color: #e50914; /* Màu đỏ Netflix */
+        margin-bottom: 30px;
+        font-size: 2em;
+        font-weight: bold;
+    }
+
+    .login-button {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        padding: 15px 20px;
+        margin-bottom: 15px;
+        border: none;
+        border-radius: 8px;
+        font-size: 1.1em;
+        cursor: pointer;
+        transition: background-color 0.3s ease, transform 0.2s ease;
+        font-weight: 600;
+        text-decoration: none; /* Cho thẻ anchor nếu được sử dụng */
+        color: white; /* Màu chữ mặc định */
+    }
+
+    .login-button:hover {
+        transform: translateY(-2px);
+    }
+
+    .login-button i {
+        margin-right: 15px;
+        font-size: 1.3em;
+    }
+
+    .google-button {
+        background-color: #4285F4; /* Màu xanh Google */
+    }
+
+    .google-button:hover {
+        background-color: #357ae8;
+    }
+
+    .facebook-button {
+        background-color: #1877F2; /* Màu xanh Facebook */
+    }
+
+    .facebook-button:hover {
+        background-color: #166FE5;
+    }
+
+    .divider {
+        margin: 30px 0;
+        font-size: 0.9em;
+        color: #777;
+        position: relative;
+    }
+
+    .divider::before,
+    .divider::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        width: 40%;
+        height: 1px;
+        background-color: #333;
+    }
+
+    .divider::before {
+        left: 0;
+    }
+
+    .divider::after {
+        right: 0;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+        text-align: left;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 500;
+        color: #ccc;
+    }
+
+    .form-control {
+        width: calc(100% - 20px);
+        padding: 12px 10px;
+        border: 1px solid #333;
+        border-radius: 6px;
+        background-color: #333;
+        color: #e5e5e5;
+        font-size: 1em;
+        box-sizing: border-box;
+    }
+
+    .form-control:focus {
+        border-color: #e50914;
+        outline: none;
+        box-shadow: 0 0 0 2px rgba(229, 9, 20, 0.3);
+    }
+
+    .btn-primary {
+        background-color: #e50914;
+        color: white;
+        padding: 15px 20px;
+        border: none;
+        border-radius: 8px;
+        font-size: 1.1em;
+        cursor: pointer;
+        width: 100%;
+        transition: background-color 0.3s ease;
+        font-weight: 600;
+    }
+
+    .btn-primary:hover {
+        background-color: #f40612;
+    }
+
+    .text-danger {
+        color: #ff4d4f;
+        margin-top: 10px;
+        display: block;
+    }
+
+    /* Font Awesome cho các biểu tượng */
+    @import url("https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css");
+</style>
+
+<div class="login-container">
+    <h2>Đăng nhập</h2>
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="text-danger mb-3" role="alert">
+            @TempData["ErrorMessage"]
+        </div>
+    }
+
+    <form asp-controller="Account" asp-action="ExternalLogin" asp-route-returnUrl="@returnUrl" method="post">
+        @Html.AntiForgeryToken()
+        <button type="submit" name="provider" value="Google" class="login-button google-button">
+            <i class="fab fa-google"></i> Đăng nhập với Google
+        </button>
+        <button type="submit" name="provider" value="Facebook" class="login-button facebook-button">
+            <i class="fab fa-facebook-f"></i> Đăng nhập với Facebook
+        </button>
+    </form>
+
+    <div class="divider">HOẶC</div>
+
+    <!-- Bạn có thể thêm form đăng nhập cục bộ ở đây nếu cần -->
+    <form asp-controller="Account" asp-action="Login" asp-route-returnUrl="@returnUrl" method="post">
+        <!-- Ví dụ cho đăng nhập cục bộ (tùy chọn) -->
+        <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" class="form-control" placeholder="Nhập email của bạn" required />
+        </div>
+        <div class="form-group">
+            <label for="password">Mật khẩu</label>
+            <input type="password" id="password" name="password" class="form-control" placeholder="Nhập mật khẩu của bạn" required />
+        </div>
+        <button type="submit" class="btn-primary">Đăng nhập</button>
+    </form>
+
+    <p class="mt-4" style="font-size: 0.9em; color: #aaa;">
+        Chưa có tài khoản? <a href="#" style="color: #e50914; text-decoration: none;">Đăng ký ngay</a>
+    </p>
+</div>
