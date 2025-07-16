@@ -1,63 +1,79 @@
-// using necessary namespaces
-using FilmService.Models; // Assuming your models are here
-using FilmService.Services; // Assuming your services are here
+﻿// using necessary namespaces
+using WebFilmOnline.Data; // Đảm bảo namespace này khớp với thư mục Data của bạn
+using WebFilmOnline.Models; // Đảm bảo namespace này khớp với thư mục Models của bạn
+using WebFilmOnline.Services; // Đảm bảo namespace này khớp với thư mục Services của bạn
+using WebFilmOnline.Services.Interfaces; // Đảm bảo namespace này khớp với thư mục Interfaces của bạn
+using WebFilmOnline.Services.VNPay; // Đảm bảo namespace này khớp với thư mục Services/VNPay của bạn
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Identity; // For Identity if you plan to use it later, or just for claims
 using Microsoft.EntityFrameworkCore;
-using WebFilmOnline.Models;
+using Microsoft.Extensions.Logging; // Cho ILogger
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+// Thêm các dịch vụ vào container.
 builder.Services.AddControllersWithViews();
 
-// Configure DbContext
+// Cấu hình DbContext
 builder.Services.AddDbContext<FilmServiceDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))); // Sử dụng "DefaultConnection"
 
-// Add Authentication services
+// Thêm dịch vụ Logging
+builder.Services.AddLogging(loggingBuilder =>
+{
+    loggingBuilder.AddConsole(); // Xuất nhật ký ra console
+    loggingBuilder.AddDebug();   // Xuất nhật ký ra cửa sổ debug
+});
+
+// Đăng ký các dịch vụ tùy chỉnh
+builder.Services.AddScoped<IUserService, UserService>(); // Đăng ký interface và implementation của user service
+builder.Services.AddScoped<PointService>(); // Đăng ký PointService
+builder.Services.AddScoped<VnPayService>(); // Đăng ký VnPayService
+
+// Thêm dịch vụ Xác thực
 builder.Services.AddAuthentication(options =>
 {
-    // Set the default scheme to Cookie authentication
+    // Đặt scheme mặc định là Cookie authentication
     options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-    // Set the default challenge scheme to handle unauthenticated requests
+    // Đặt scheme challenge mặc định để xử lý các yêu cầu chưa được xác thực
     options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
 })
 .AddCookie(options =>
 {
-    // Configure cookie options, e.g., login path, access denied path
-    options.LoginPath = "/Account/Login"; // Path to your login page
-    options.AccessDeniedPath = "/Account/AccessDenied"; // Path for access denied
+    // Cấu hình các tùy chọn cookie
+    options.LoginPath = "/Account/Login"; // Đường dẫn đến trang đăng nhập của bạn
+    options.AccessDeniedPath = "/Account/AccessDenied"; // Đường dẫn cho truy cập bị từ chối
+    options.Cookie.Name = "WebFilmOnlineAuth"; // Tên cookie xác thực
+    options.Cookie.HttpOnly = true; // Cookie chỉ có thể truy cập qua HTTP, không phải JavaScript
+    options.ExpireTimeSpan = TimeSpan.FromDays(7); // Thời gian hết hạn của cookie
+    options.SlidingExpiration = true; // Gia hạn thời gian hết hạn của cookie khi người dùng hoạt động
 })
 .AddGoogle(googleOptions =>
 {
-    // Retrieve Google ClientId and ClientSecret from appsettings.json
-    googleOptions.ClientId = builder.Configuration["Authentication:Google:ClientId"];
-    googleOptions.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"];
-    // Specify the scope of information to request from Google
-    googleOptions.Scope.Add("profile"); // Request profile information (name, picture)
-    googleOptions.Scope.Add("email");   // Request email address
+    // Lấy ClientId và ClientSecret của Google từ appsettings.json
+    googleOptions.ClientId = builder.Configuration["Authentication:Google:ClientId"] ?? throw new InvalidOperationException("Google ClientId not configured.");
+    googleOptions.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"] ?? throw new InvalidOperationException("Google ClientSecret not configured.");
+    // Chỉ định phạm vi thông tin cần yêu cầu từ Google
+    googleOptions.Scope.Add("profile"); // Yêu cầu thông tin hồ sơ (tên, ảnh)
+    googleOptions.Scope.Add("email");   // Yêu cầu địa chỉ email
 })
 .AddFacebook(facebookOptions =>
 {
-    // Retrieve Facebook AppId and AppSecret from appsettings.json
-    facebookOptions.AppId = builder.Configuration["Authentication:Facebook:AppId"];
-    facebookOptions.AppSecret = builder.Configuration["Authentication:Facebook:AppSecret"];
-    // Specify the scope of information to request from Facebook
-    facebookOptions.Scope.Add("email"); // Request email address
-    facebookOptions.Scope.Add("public_profile"); // Request public profile information
+    // Lấy AppId và AppSecret của Facebook từ appsettings.json
+    facebookOptions.AppId = builder.Configuration["Authentication:Facebook:AppId"] ?? throw new InvalidOperationException("Facebook AppId not configured.");
+    facebookOptions.AppSecret = builder.Configuration["Authentication:Facebook:AppSecret"] ?? throw new InvalidOperationException("Facebook AppSecret not configured.");
+    // Chỉ định phạm vi thông tin cần yêu cầu từ Facebook
+    facebookOptions.Scope.Add("email"); // Yêu cầu địa chỉ email
+    facebookOptions.Scope.Add("public_profile"); // Yêu cầu thông tin hồ sơ công khai
 });
 
-// Register custom services
-builder.Services.AddScoped<IUserService, UserService>(); // Register the user service interface and implementation
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// Cấu hình pipeline yêu cầu HTTP.
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+    // Giá trị HSTS mặc định là 30 ngày. Bạn có thể muốn thay đổi điều này cho các kịch bản sản xuất, xem [https://aka.ms/aspnetcore-hsts](https://aka.ms/aspnetcore-hsts).
     app.UseHsts();
 }
 
@@ -66,9 +82,9 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
-// Enable authentication middleware
+// Kích hoạt middleware xác thực
 app.UseAuthentication();
-// Enable authorization middleware
+// Kích hoạt middleware ủy quyền
 app.UseAuthorization();
 
 app.MapControllerRoute(
