@@ -1,0 +1,67 @@
+## Build results
+bin/
+obj/
+[Bb]uild/
+[Bb]uilds/
+*.dll
+*.exe
+*.app
+*.log
+*.pdb
+*.cache
+*.dbmdl
+*.db
+
+## User-specific files
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+## Visual Studio specific
+.vscode/
+.vs/
+*.VC.db
+*.VC.opendb
+
+## ASP.NET & IIS
+project.lock.json
+project.fragment.lock.json
+artifacts/
+wwwroot/lib/
+*.swp
+*.scc
+_ReSharper*/
+*.resharper
+*.DotSettings.user
+
+## NuGet
+*.nupkg
+*.snupkg
+.nuget/
+packages/
+*.nuspec
+project.json.lock
+PackageSources.json
+
+## Entity Framework
+Migrations/
+
+## Rider
+.idea/
+
+## Others
+Thumbs.db
+desktop.ini
+*.bak
+*.tmp
+
+## Logs
+*.log
+
+## Environment
+.env
+*.secret
+
+## Publish folder
+publish/
