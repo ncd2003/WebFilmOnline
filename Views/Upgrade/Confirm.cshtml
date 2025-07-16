@@ -1,5 +1,12 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
-}
+﻿@model WebFilmOnline.ViewModels.UpgradeSummaryViewModel
+
+<h2>Xác nhận nâng cấp gói</h2>
+<p>Gói hiện tại: @Model.CurrentPackageName</p>
+<p>Gói mới: @Model.NewPackageName</p>
+<p>Giá trị còn lại được trừ: @Model.RemainingValue VND</p>
+<p><strong>Cần thanh toán: @Model.FinalCost VND</strong></p>
+
+<form method="post" asp-action="ConfirmUpgrade">
+    <input type="hidden" name="packageId" value="@Model.NewPackageName" />
+    <button type="submit">Xác nhận & Thanh toán</button>
+</form>

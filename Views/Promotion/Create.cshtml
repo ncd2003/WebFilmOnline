@@ -1,5 +1,23 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
-}
+﻿@model WebFilmOnline.Models.Promotion
+
+<h2>Add Promotion</h2>
+
+<form asp-action="Create" method="post">
+    <div>
+        <label>Name:</label>
+        <input asp-for="Name" />
+    </div>
+    <div>
+        <label>Discount %:</label>
+        <input asp-for="DiscountPercent" />
+    </div>
+    <div>
+        <label>Start Date:</label>
+        <input asp-for="StartDate" type="date" />
+    </div>
+    <div>
+        <label>End Date:</label>
+        <input asp-for="EndDate" type="date" />
+    </div>
+    <button type="submit">Save</button>
+</form>
