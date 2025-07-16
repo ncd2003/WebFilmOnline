@@ -1,0 +1,65 @@
+﻿@{
+    ViewData["Title"] = "Báo cáo Doanh thu Thời gian thực";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Báo cáo Doanh thu Thời gian thực</h1>
+    <div id="revenue-dashboard" class="mt-4 p-4 border rounded shadow-sm">
+        <p>Đang tải dữ liệu...</p>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        async function fetchRevenueData() {
+            try {
+                const response = await fetch('/api/Revenue/summary');
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const data = await response.json();
+                console.log('Dữ liệu doanh thu:', data);
+
+                const dashboardDiv = document.getElementById('revenue-dashboard');
+                let htmlContent = `
+                    <h2 class="text-primary">Tổng Doanh Thu Hiện Tại: ${data.currentTotalRevenue.toLocaleString('vi-VN')} VND</h2>
+                    <p class="lead">Số Lượng Giao Dịch Thành Công: ${data.successfulTransactionsCount}</p>
+
+                    <h3 class="mt-4">Doanh Thu Theo Loại Sản Phẩm:</h3>
+                    <ul class="list-group list-group-flush">
+                `;
+                for (const [key, value] of Object.entries(data.revenueByProductType)) {
+                    htmlContent += `<li class="list-group-item d-flex justify-content-between align-items-center">
+                                        ${key}
+                                        <span class="badge bg-secondary rounded-pill">${value.toLocaleString('vi-VN')} VND</span>
+                                    </li>`;
+                }
+                htmlContent += `</ul>`;
+
+                htmlContent += `
+                    <h3 class="mt-4">Doanh Thu Theo Phút (Gần đây):</h3>
+                    <ul class="list-group list-group-flush">
+                `;
+                data.revenueByMinute.forEach(entry => {
+                    htmlContent += `<li class="list-group-item d-flex justify-content-between align-items-center">
+                                        ${entry.minute}
+                                        <span class="badge bg-info rounded-pill">${entry.revenue.toLocaleString('vi-VN')} VND</span>
+                                    </li>`;
+                });
+                htmlContent += `</ul>`;
+
+                dashboardDiv.innerHTML = htmlContent;
+
+            } catch (error) {
+                console.error("Lỗi khi tải dữ liệu doanh thu:", error);
+                document.getElementById('revenue-dashboard').innerHTML = `<p class="text-danger">Không thể tải báo cáo doanh thu. Vui lòng thử lại sau.</p>`;
+            }
+        }
+
+        // Gọi hàm fetch dữ liệu ban đầu và sau đó lặp lại mỗi 2 giây
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchRevenueData();
+            setInterval(fetchRevenueData, 2000); // Cập nhật mỗi 2 giây
+        });
+    </script>
+}
