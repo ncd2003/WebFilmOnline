@@ -1,0 +1,89 @@
+﻿@model IQueryable<WebFilmOnline.Models.PointTransaction>
+
+@{
+    ViewData["Title"] = "Ví Điểm Của Tôi";
+}
+
+<h1>Ví Điểm Của Tôi</h1>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success" role="alert">
+        @TempData["SuccessMessage"]
+    </div>
+}
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger" role="alert">
+        @TempData["ErrorMessage"]
+    </div>
+}
+
+<div class="card mb-4">
+    <div class="card-header">
+        Số dư hiện tại
+    </div>
+    <div class="card-body">
+        <h2 class="card-title text-success">@ViewBag.CurrentBalance.ToString("N0") Points</h2>
+        <a asp-action="TopUp" class="btn btn-primary">Nạp thêm điểm</a>
+    </div>
+</div>
+
+<h2>Lịch Sử Giao Dịch</h2>
+
+@if (Model != null && Model.Any())
+{
+    <table class="table table-striped table-hover">
+        <thead>
+            <tr>
+                <th>Loại</th>
+                <th>Số lượng</th>
+                <th>Thời gian</th>
+                <th>Mô tả</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var transaction in Model.OrderByDescending(t => t.CreatedAt)) // Đảm bảo sắp xếp mới nhất lên đầu
+            {
+                <tr>
+                    <td>
+                        @if (transaction.Amount > 0)
+                        {
+                            <span class="badge bg-success">Nạp điểm</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-danger">Chi tiêu</span>
+                        }
+                    </td>
+                    <td>@transaction.Amount?.ToString("N0")</td>
+                    <td>@transaction.CreatedAt?.ToString("dd/MM/yyyy HH:mm:ss")</td>
+                    <td>
+                        @if (transaction.Type == "Earn")
+                        {
+                            <span>Điểm nhận được từ việc nạp tiền.</span>
+                        }
+                        else if (transaction.Type == "Spend")
+                        {
+                            <span>Điểm đã chi tiêu để mua dịch vụ.</span>
+                        }
+                        else
+                        {
+                            <span>@transaction.Type</span>
+                        }
+                        @if (transaction.RelatedOrderId.HasValue)
+                        {
+                            <span> (Đơn hàng #@transaction.RelatedOrderId.Value)</span>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <div class="alert alert-info">
+        <p>Bạn chưa có giao dịch điểm nào. Hãy <a asp-action="TopUp">nạp tiền</a> để bắt đầu!</p>
+    </div>
+}

@@ -1,22 +1,89 @@
 html {
-  font-size: 14px;
+    font-size: 14px;
 }
 
 @media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
+    html {
+        font-size: 16px;
+    }
 }
 
 .btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+    box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
 }
 
 html {
-  position: relative;
-  min-height: 100%;
+    position: relative;
+    min-height: 100%;
 }
 
 body {
-  margin-bottom: 60px;
+    margin-bottom: 60px;
+}
+
+/* Custom styles for Netflix-like appearance */
+.navbar-dark.bg-dark {
+    background-color: #141414 !important; /* Darker header */
+}
+
+.navbar-brand {
+    color: #e50914 !important; /* Netflix red for brand */
+    font-weight: bold;
+}
+
+.nav-link.text-light {
+    color: #e5e5e5 !important; /* Lighter text for nav links */
+}
+
+    .nav-link.text-light:hover {
+        color: #fff !important;
+    }
+
+.footer {
+    background-color: #141414;
+    color: #e5e5e5;
+    line-height: 60px; /* Vertically center the text there */
+}
+
+/* Ensure body background is consistent with login page */
+body {
+    background-color: #141414;
+    color: #e5e5e5;
+}
+
+/* Basic styling for main content */
+.container {
+    background-color: #141414; /* Match body background */
+    padding-top: 20px;
+    padding-bottom: 20px;
+}
+
+.display-4 {
+    color: #e50914; /* Netflix red for main headings */
+}
+
+/* Ensure responsive images */
+img {
+    max-width: 100%;
+    height: auto;
+}
+
+/* General button styling */
+.btn-primary {
+    background-color: #e50914;
+    border-color: #e50914;
+    color: white;
+    border-radius: 8px;
+    padding: 10px 20px;
+    font-weight: 600;
+}
+
+    .btn-primary:hover {
+        background-color: #f40612;
+        border-color: #f40612;
+    }
+
+/* Text danger for error messages */
+.text-danger {
+    color: #ff4d4f !important;
 }

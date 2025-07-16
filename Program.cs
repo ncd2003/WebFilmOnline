@@ -1,38 +1,94 @@
-using WebFilmOnline.Models;
+﻿// using necessary namespaces
+using WebFilmOnline.Data; // Đảm bảo namespace này khớp với thư mục Data của bạn
+using WebFilmOnline.Models; // Đảm bảo namespace này khớp với thư mục Models của bạn
+using WebFilmOnline.Services; // Đảm bảo namespace này khớp với thư mục Services của bạn
+using WebFilmOnline.Services.Interfaces; // Đảm bảo namespace này khớp với thư mục Interfaces của bạn
+using WebFilmOnline.Services.VNPay; // Đảm bảo namespace này khớp với thư mục Services/VNPay của bạn
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
-namespace WebFilmOnline
+using Microsoft.Extensions.Logging; // Cho ILogger
+
+var builder = WebApplication.CreateBuilder(args);
+
+// Thêm các dịch vụ vào container.
+builder.Services.AddControllersWithViews();
+
+// Cấu hình DbContext
+builder.Services.AddDbContext<FilmServiceDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))); // Sử dụng "DefaultConnection"
+
+// Thêm dịch vụ Logging
+builder.Services.AddLogging(loggingBuilder =>
 {
-    public class Program
-    {
-        public static void Main(string[] args)
-        {
-            var builder = WebApplication.CreateBuilder(args);
+    loggingBuilder.AddConsole(); // Xuất nhật ký ra console
+    loggingBuilder.AddDebug();   // Xuất nhật ký ra cửa sổ debug
+});
 
-            // Add services to the container.
-            builder.Services.AddControllersWithViews();
-            builder.Services.AddDbContext<FilmServiceDbContext>(opt => opt.UseSqlServer(builder.Configuration.GetConnectionString("MyCnn")));
-            var app = builder.Build();
+// Đăng ký các dịch vụ tùy chỉnh
+builder.Services.AddScoped<IUserService, UserService>(); // Đăng ký interface và implementation của user service
+builder.Services.AddScoped<PointService>(); // Đăng ký PointService
+builder.Services.AddScoped<VnPayService>(); // Đăng ký VnPayService
 
-            // Configure the HTTP request pipeline.
-            if (!app.Environment.IsDevelopment())
-            {
-                app.UseExceptionHandler("/Home/Error");
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-                app.UseHsts();
-            }
+// Thêm dịch vụ Xác thực
+builder.Services.AddAuthentication(options =>
+{
+    // Đặt scheme mặc định là Cookie authentication
+    options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+    // Đặt scheme challenge mặc định để xử lý các yêu cầu chưa được xác thực
+    options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+})
+.AddCookie(options =>
+{
+    // Cấu hình các tùy chọn cookie
+    options.LoginPath = "/Account/Login"; // Đường dẫn đến trang đăng nhập của bạn
+    options.AccessDeniedPath = "/Account/AccessDenied"; // Đường dẫn cho truy cập bị từ chối
+    options.Cookie.Name = "WebFilmOnlineAuth"; // Tên cookie xác thực
+    options.Cookie.HttpOnly = true; // Cookie chỉ có thể truy cập qua HTTP, không phải JavaScript
+    options.ExpireTimeSpan = TimeSpan.FromDays(7); // Thời gian hết hạn của cookie
+    options.SlidingExpiration = true; // Gia hạn thời gian hết hạn của cookie khi người dùng hoạt động
+})
+.AddGoogle(googleOptions =>
+{
+    // Lấy ClientId và ClientSecret của Google từ appsettings.json
+    googleOptions.ClientId = builder.Configuration["Authentication:Google:ClientId"] ?? throw new InvalidOperationException("Google ClientId not configured.");
+    googleOptions.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"] ?? throw new InvalidOperationException("Google ClientSecret not configured.");
+    // Chỉ định phạm vi thông tin cần yêu cầu từ Google
+    googleOptions.Scope.Add("profile"); // Yêu cầu thông tin hồ sơ (tên, ảnh)
+    googleOptions.Scope.Add("email");   // Yêu cầu địa chỉ email
+})
+.AddFacebook(facebookOptions =>
+{
+    // Lấy AppId và AppSecret của Facebook từ appsettings.json
+    facebookOptions.AppId = builder.Configuration["Authentication:Facebook:AppId"] ?? throw new InvalidOperationException("Facebook AppId not configured.");
+    facebookOptions.AppSecret = builder.Configuration["Authentication:Facebook:AppSecret"] ?? throw new InvalidOperationException("Facebook AppSecret not configured.");
+    // Chỉ định phạm vi thông tin cần yêu cầu từ Facebook
+    facebookOptions.Scope.Add("email"); // Yêu cầu địa chỉ email
+    facebookOptions.Scope.Add("public_profile"); // Yêu cầu thông tin hồ sơ công khai
+});
 
-            app.UseHttpsRedirection();
-            app.UseStaticFiles();
 
-            app.UseRouting();
+var app = builder.Build();
 
-            app.UseAuthorization();
-
-            app.MapControllerRoute(
-                name: "default",
-                pattern: "{controller=Home}/{action=Index}/{id?}");
-
-            app.Run();
-        }
-    }
+// Cấu hình pipeline yêu cầu HTTP.
+if (!app.Environment.IsDevelopment())
+{
+    app.UseExceptionHandler("/Home/Error");
+    // Giá trị HSTS mặc định là 30 ngày. Bạn có thể muốn thay đổi điều này cho các kịch bản sản xuất, xem [https://aka.ms/aspnetcore-hsts](https://aka.ms/aspnetcore-hsts).
+    app.UseHsts();
 }
+
+app.UseHttpsRedirection();
+app.UseStaticFiles();
+
+app.UseRouting();
+
+// Kích hoạt middleware xác thực
+app.UseAuthentication();
+// Kích hoạt middleware ủy quyền
+app.UseAuthorization();
+
+app.MapControllerRoute(
+    name: "default",
+    pattern: "{controller=Home}/{action=Index}/{id?}");
+
+app.Run();
