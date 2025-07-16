@@ -1,5 +1,7 @@
 using WebFilmOnline.Models;
 using Microsoft.EntityFrameworkCore;
+using WebFilmOnline.Services.VNPay;
+using WebFilmOnline.Services;
 namespace WebFilmOnline
 {
     public class Program
@@ -11,6 +13,8 @@ namespace WebFilmOnline
             // Add services to the container.
             builder.Services.AddControllersWithViews();
             builder.Services.AddDbContext<FilmServiceDbContext>(opt => opt.UseSqlServer(builder.Configuration.GetConnectionString("MyCnn")));
+            builder.Services.AddScoped<PointService>();
+            builder.Services.AddScoped<VnPayService>();
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.

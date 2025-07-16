@@ -1,0 +1,41 @@
+﻿@model WebFilmOnline.Models.ViewModels.TopUpViewModel
+
+@{
+    ViewData["Title"] = "Nạp Tiền Vào Ví Điểm";
+}
+
+<h1>Nạp Tiền Vào Ví Điểm</h1>
+<hr />
+
+<div class="row">
+    <div class="col-md-6">
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <div class="alert alert-danger" role="alert">
+                @TempData["ErrorMessage"]
+            </div>
+        }
+        <form asp-action="TopUp" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="mb-3">
+                <label asp-for="AmountVND" class="form-label"></label>
+                <input asp-for="AmountVND" class="form-control" type="number" min="10000" step="10000" />
+                <span asp-validation-for="AmountVND" class="text-danger"></span>
+            </div>
+            <div class="mb-3">
+                <button type="submit" class="btn btn-primary">Tiếp tục thanh toán VNPay</button>
+                <a asp-action="Wallet" class="btn btn-secondary">Quay lại Ví</a>
+            </div>
+        </form>
+        <div class="alert alert-info mt-3">
+            <p><strong>Lưu ý:</strong> Bạn sẽ được chuyển hướng đến cổng thanh toán VNPay để hoàn tất giao dịch.</p>
+            <p>1 VNĐ = 1 Point (tỷ lệ có thể thay đổi).</p>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
