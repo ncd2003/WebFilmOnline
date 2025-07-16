@@ -1,0 +1,40 @@
+﻿@model IEnumerable<WebFilmOnline.Models.UserChannel>
+
+@{
+    ViewData["Title"] = "Quản lý Kênh Người dùng";
+}
+
+<h1>Quản lý Kênh Người dùng</h1>
+
+<p>
+    <a asp-action="Create" class="btn btn-primary">Thêm Kênh Mới</a>
+</p>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Tên Kênh</th>
+            <th>Người dùng</th>
+            <th>Provider</th>
+            <th>API Key</th>
+            <th>Hoạt động</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@Html.DisplayFor(modelItem => item.Name)</td>
+                <td>@Html.DisplayFor(modelItem => item.User.UserName)</td>
+                <td>@(item.Provider?.Name ?? "N/A")</td>
+                <td>@Html.DisplayFor(modelItem => item.ApiKey)</td>
+                <td>@(item.IsActive ? "Có" : "Không")</td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.ChannelId" class="btn btn-warning btn-sm">Sửa</a> |
+                    <a asp-action="Delete" asp-route-id="@item.ChannelId" class="btn btn-danger btn-sm">Xóa</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

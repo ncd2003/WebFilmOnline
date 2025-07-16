@@ -1,0 +1,28 @@
+﻿@model IEnumerable<WebFilmOnline.Models.Package>
+
+@{
+    ViewData["Title"] = "Các Gói Dịch Vụ";
+}
+
+<h1>Các Gói Dịch Vụ</h1>
+
+<div class="row">
+    @foreach (var package in Model)
+    {
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title">@package.Name</h5>
+                    <p class="card-text">
+                        @package.Description<br />
+                        <strong>Giá:</strong> @package.Price.ToString("N0") VNĐ<br />
+                        <strong>Thời hạn:</strong> @package.DurationDays ngày
+                    </p>
+                    <div class="mt-auto">
+                        <a asp-action="Details" asp-route-id="@package.PackageId" class="btn btn-info btn-sm">Xem Chi Tiết Gói</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>

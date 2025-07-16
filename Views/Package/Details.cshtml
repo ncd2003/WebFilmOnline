@@ -1,0 +1,48 @@
+﻿@model WebFilmOnline.Models.Package
+
+@{
+    ViewData["Title"] = Model.Name;
+    var productsInPackage = ViewBag.ProductsInPackage as IEnumerable<WebFilmOnline.Models.Product>;
+}
+
+<h1>@Model.Name</h1>
+
+<div class="row">
+    <div class="col-md-6">
+        <p><strong>Mô tả:</strong> @Model.Description</p>
+        <p><strong>Giá:</strong> @Model.Price.ToString("N0") VNĐ</p>
+        <p><strong>Thời hạn:</strong> @Model.DurationDays ngày</p>
+
+        @if (User.Identity?.IsAuthenticated == true)
+        {
+            <form asp-action="Purchase" asp-controller="Package" method="post">
+                <input type="hidden" name="packageId" value="@Model.PackageId" />
+                <button type="submit" class="btn btn-primary">Mua Gói Này</button>
+            </form>
+        }
+        else
+        {
+            <div class="alert alert-info" role="alert">
+                Bạn cần đăng nhập để mua gói dịch vụ.
+            </div>
+            <a asp-action="Login" asp-controller="Account" asp-route-returnUrl="@Url.Action("Details", "Package", new { id = Model.PackageId })" class="btn btn-primary">Đăng nhập để mua</a>
+        }
+        <a asp-action="Index" class="btn btn-secondary mt-3">Quay Lại Danh Sách Gói</a>
+    </div>
+    <div class="col-md-6">
+        <h3>Phim bao gồm trong gói:</h3>
+        @if (productsInPackage != null && productsInPackage.Any())
+        {
+            <ul>
+                @foreach (var product in productsInPackage)
+                {
+                    <li><a asp-action="Details" asp-controller="Product" asp-route-id="@product.ProductId">@product.Title</a></li>
+                }
+            </ul>
+        }
+        else
+        {
+            <p>Gói này hiện chưa có phim nào được liệt kê.</p>
+        }
+    </div>
+</div>

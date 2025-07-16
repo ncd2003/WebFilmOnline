@@ -1,0 +1,51 @@
+﻿@model WebFilmOnline.Models.Package
+
+@{
+    ViewData["Title"] = "Xóa Gói Dịch Vụ";
+}
+
+<h1>Xóa Gói Dịch Vụ</h1>
+
+<h3>Bạn có chắc chắn muốn xóa gói dịch vụ này?</h3>
+<div>
+    <h4>@Model.Name</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Name)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Name)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Description)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Description)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Price)
+        </dt>
+        <dd class="col-sm-10">
+            @Model.Price.ToString("N0") VNĐ
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.DurationDays)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.DurationDays) ngày
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.IsActive)
+        </dt>
+        <dd class="col-sm-10">
+            @(Model.IsActive ? "Có" : "Không")
+        </dd>
+    </dl>
+
+    <form asp-action="Delete">
+        <input type="hidden" asp-for="PackageId" />
+        <input type="submit" value="Xóa" class="btn btn-danger" /> |
+        <a asp-action="Index" class="btn btn-secondary">Quay Lại Danh Sách</a>
+    </form>
+</div>

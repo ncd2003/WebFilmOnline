@@ -1,0 +1,38 @@
+﻿@model IEnumerable<WebFilmOnline.Models.StreamingProvider>
+
+@{
+    ViewData["Title"] = "Quản lý Nhà cung cấp Streaming";
+}
+
+<h1>Quản lý Nhà cung cấp Streaming</h1>
+
+<p>
+    <a asp-action="Create" class="btn btn-primary">Thêm Nhà cung cấp Mới</a>
+</p>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Tên</th>
+            <th>API Key</th>
+            <th>Base URL</th>
+            <th>Hoạt động</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@Html.DisplayFor(modelItem => item.Name)</td>
+                <td>@Html.DisplayFor(modelItem => item.ApiKey)</td>
+                <td>@Html.DisplayFor(modelItem => item.BaseUrl)</td>
+                <td>@(item.IsActive ? "Có" : "Không")</td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.ProviderId" class="btn btn-warning btn-sm">Sửa</a> |
+                    <a asp-action="Delete" asp-route-id="@item.ProviderId" class="btn btn-danger btn-sm">Xóa</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

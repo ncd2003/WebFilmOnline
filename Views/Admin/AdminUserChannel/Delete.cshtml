@@ -1,0 +1,57 @@
+﻿@model WebFilmOnline.Models.UserChannel
+
+@{
+    ViewData["Title"] = "Xóa Kênh Người dùng";
+}
+
+<h1>Xóa Kênh Người dùng</h1>
+
+<h3>Bạn có chắc chắn muốn xóa kênh người dùng này?</h3>
+<div>
+    <h4>@Model.Name</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Name)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Name)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.User.UserName)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.User.UserName)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Description)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Description)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Provider.Name)
+        </dt>
+        <dd class="col-sm-10">
+            @(Model.Provider?.Name ?? "N/A")
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.ApiKey)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.ApiKey)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.IsActive)
+        </dt>
+        <dd class="col-sm-10">
+            @(Model.IsActive ? "Có" : "Không")
+        </dd>
+    </dl>
+
+    <form asp-action="Delete">
+        <input type="hidden" asp-for="ChannelId" />
+        <input type="submit" value="Xóa" class="btn btn-danger" /> |
+        <a asp-action="Index" class="btn btn-secondary">Quay Lại Danh Sách</a>
+    </form>
+</div>

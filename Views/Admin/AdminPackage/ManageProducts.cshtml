@@ -1,0 +1,65 @@
+﻿@model WebFilmOnline.Models.Package
+
+@{
+    ViewData["Title"] = $"Quản lý Phim trong Gói: {ViewBag.Package.Name}";
+    var productsInPackage = ViewBag.ProductsInPackage as IEnumerable<WebFilmOnline.Models.Product>;
+    var availableProducts = ViewBag.AvailableProducts as SelectList;
+}
+
+<h1>Quản lý Phim trong Gói: @ViewBag.Package.Name</h1>
+
+<h3>Thêm Phim vào Gói</h3>
+<form asp-action="AddProductToPackage" asp-controller="AdminPackage" method="post">
+    <input type="hidden" name="packageId" value="@ViewBag.Package.PackageId" />
+    <div class="form-group row">
+        <label for="productId" class="col-sm-2 col-form-label">Chọn Phim</label>
+        <div class="col-sm-8">
+            <select name="productId" id="productId" class="form-control" asp-items="availableProducts">
+                <option value="">-- Chọn Phim --</option>
+            </select>
+        </div>
+        <div class="col-sm-2">
+            <button type="submit" class="btn btn-success">Thêm</button>
+        </div>
+    </div>
+</form>
+
+<hr />
+
+<h3>Các Phim hiện có trong Gói</h3>
+@if (productsInPackage == null || !productsInPackage.Any())
+{
+    <p>Chưa có phim nào trong gói này.</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Tên Phim</th>
+                <th>Thể loại</th>
+                <th>Giá</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in productsInPackage)
+            {
+                <tr>
+                    <td>@Html.DisplayFor(modelItem => item.Title)</td>
+                    <td>@Html.DisplayFor(modelItem => item.Category.Name)</td>
+                    <td>@item.Price.ToString("N0") VNĐ</td>
+                    <td>
+                        <form asp-action="RemoveProductFromPackage" asp-controller="AdminPackage" method="post" style="display:inline;" onsubmit="return confirm('Bạn có chắc muốn xóa phim này khỏi gói?');">
+                            <input type="hidden" name="packageId" value="@ViewBag.Package.PackageId" />
+                            <input type="hidden" name="productId" value="@item.ProductId" />
+                            <button type="submit" class="btn btn-danger btn-sm">Xóa khỏi gói</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+<a asp-action="Index" class="btn btn-secondary mt-3">Quay Lại Danh Sách Gói</a>

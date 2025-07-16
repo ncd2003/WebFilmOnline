@@ -1,0 +1,45 @@
+﻿@model WebFilmOnline.Models.StreamingProvider
+
+@{
+    ViewData["Title"] = "Xóa Nhà cung cấp Streaming";
+}
+
+<h1>Xóa Nhà cung cấp Streaming</h1>
+
+<h3>Bạn có chắc chắn muốn xóa nhà cung cấp này?</h3>
+<div>
+    <h4>@Model.Name</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Name)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Name)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.ApiKey)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.ApiKey)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.BaseUrl)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.BaseUrl)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.IsActive)
+        </dt>
+        <dd class="col-sm-10">
+            @(Model.IsActive ? "Có" : "Không")
+        </dd>
+    </dl>
+
+    <form asp-action="Delete">
+        <input type="hidden" asp-for="ProviderId" />
+        <input type="submit" value="Xóa" class="btn btn-danger" /> |
+        <a asp-action="Index" class="btn btn-secondary">Quay Lại Danh Sách</a>
+    </form>
+</div>

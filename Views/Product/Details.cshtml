@@ -1,0 +1,44 @@
+﻿@model WebFilmOnline.Models.Product
+
+@{
+    ViewData["Title"] = Model.Title;
+    bool hasAccess = ViewBag.HasAccess ?? false;
+    bool canPurchase = ViewBag.CanPurchase ?? true;
+}
+
+<h1>@Model.Title</h1>
+
+<div class="row">
+    <div class="col-md-4">
+        <img src="@Model.ThumbnailUrl" class="img-fluid rounded" alt="@Model.Title" />
+    </div>
+    <div class="col-md-8">
+        <p><strong>Mô tả:</strong> @Model.Description</p>
+        <p><strong>Thể loại:</strong> @(Model.Category?.Name ?? "N/A")</p>
+        <p><strong>Giá:</strong> @Model.Price.ToString("N0") VNĐ</p>
+
+        @if (hasAccess)
+        {
+            <div class="alert alert-success" role="alert">
+                Bạn đã sở hữu phim này hoặc có quyền truy cập thông qua gói dịch vụ!
+            </div>
+            @* Logic để xem phim (Part 10) sẽ ở đây. Ví dụ: *@
+            <a asp-action="Watch" asp-controller="Film" asp-route-id="@Model.ProductId" class="btn btn-success">Xem Phim</a>
+        }
+        else if (User.Identity?.IsAuthenticated == true && canPurchase)
+        {
+            <form asp-action="Purchase" asp-controller="Product" method="post">
+                <input type="hidden" name="productId" value="@Model.ProductId" />
+                <button type="submit" class="btn btn-primary">Mua Phim Này</button>
+            </form>
+        }
+        else
+        {
+            <div class="alert alert-info" role="alert">
+                Bạn cần đăng nhập để mua phim.
+            </div>
+            <a asp-action="Login" asp-controller="Account" asp-route-returnUrl="@Url.Action("Details", "Product", new { id = Model.ProductId })" class="btn btn-primary">Đăng nhập để mua</a>
+        }
+        <a asp-action="Index" class="btn btn-secondary mt-3">Quay Lại Thư Viện</a>
+    </div>
+</div>

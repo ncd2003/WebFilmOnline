@@ -1,0 +1,98 @@
+﻿@model IEnumerable<WebFilmOnline.Models.ProductStreaming>
+
+@{
+    ViewData["Title"] = $"Quản lý Nguồn Streaming cho Phim: {ViewBag.Product.Title}";
+}
+
+<h1>Quản lý Nguồn Streaming cho Phim: @ViewBag.Product.Title</h1>
+
+<h3>Thêm nguồn Streaming mới</h3>
+<form asp-action="AddProductStreaming" asp-controller="AdminProduct" method="post">
+    <input type="hidden" name="productId" value="@ViewBag.Product.ProductId" />
+    <div class="row">
+        <div class="col-md-4 form-group">
+            <label for="ProviderId">Chọn Provider</label>
+            <select name="ProviderId" id="ProviderId" class="form-control">
+                <option value="">-- Chọn Provider --</option>
+                @foreach (var provider in ViewBag.Providers)
+                {
+                    <option value="@provider.ProviderId">@provider.Name</option>
+                }
+            </select>
+        </div>
+        <div class="col-md-4 form-group">
+            <label for="ChannelId">Hoặc Chọn Kênh Người dùng</label>
+            <select name="ChannelId" id="ChannelId" class="form-control">
+                <option value="">-- Chọn Kênh --</option>
+                @foreach (var channel in ViewBag.UserChannels)
+                {
+                    <option value="@channel.ChannelId">@channel.Name (@channel.User?.UserName ?? "N/A")</option>
+                }
+            </select>
+        </div>
+        <div class="col-md-2 form-group">
+            <label for="Priority">Độ Ưu Tiên</label>
+            <input type="number" name="Priority" id="Priority" class="form-control" value="1" min="1" max="10" />
+        </div>
+        <div class="col-md-2 form-group">
+            <label for="IsActive">Hoạt động</label>
+            <input type="checkbox" name="IsActive" id="IsActive" class="form-check-input" checked />
+        </div>
+        <div class="col-md-12 form-group mt-3">
+            <label for="StreamingUrlOrId">URL Streaming hoặc ID nội dung</label>
+            <input type="text" name="StreamingUrlOrId" id="StreamingUrlOrId" class="form-control" />
+        </div>
+    </div>
+    <button type="submit" class="btn btn-success mt-3">Thêm Nguồn</button>
+</form>
+
+<hr />
+
+<h3>Các nguồn Streaming hiện có</h3>
+@if (!Model.Any())
+{
+    <p>Chưa có nguồn streaming nào được thêm cho phim này.</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Loại Nguồn</th>
+                <th>Tên</th>
+                <th>URL/ID</th>
+                <th>Ưu tiên</th>
+                <th>Hoạt động</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @if (item.ProviderId.HasValue) { <span>Provider</span> }
+                        else if (item.ChannelId.HasValue) { <span>Kênh Người dùng</span> }
+                    </td>
+                    <td>
+                        @if (item.Provider != null) { @item.Provider.Name }
+                        else if (item.Channel != null) { @item.Channel.Name }
+                    </td>
+                    <td>@item.StreamingUrlOrId</td>
+                    <td>@item.Priority</td>
+                    <td>@(item.IsActive ? "Có" : "Không")</td>
+                    <td>
+                        @* <a asp-action="EditProductStreaming" asp-route-id="@item.ProductStreamingId">Sửa</a> | *@
+                        <form asp-action="DeleteProductStreaming" asp-controller="AdminProduct" method="post" style="display:inline;" onsubmit="return confirm('Bạn có chắc muốn xóa nguồn streaming này?');">
+                            <input type="hidden" name="productStreamingId" value="@item.ProductStreamingId" />
+                            <input type="hidden" name="productId" value="@item.ProductId" />
+                            <button type="submit" class="btn btn-danger btn-sm">Xóa</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+<a asp-action="Index" class="btn btn-secondary mt-3">Quay Lại Danh Sách Phim</a>

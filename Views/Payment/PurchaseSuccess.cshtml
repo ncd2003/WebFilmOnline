@@ -1,0 +1,16 @@
+﻿@{
+    ViewData["Title"] = "Thanh toán thành công";
+}
+
+<div class="alert alert-success text-center">
+    <h1><i class="bi bi-check-circle-fill"></i> Thanh toán thành công!</h1>
+    <p>Giao dịch của bạn đã được xử lý. Dịch vụ/Phim sẽ được kích hoạt trong tài khoản của bạn.</p>
+    <hr />
+    <p>
+        <a asp-controller="Home" asp-action="Index" class="btn btn-primary">Quay về trang chủ</a>
+        @if (User.Identity?.IsAuthenticated == true)
+        {
+            <a asp-controller="Payment" asp-action="MyOrders" class="btn btn-secondary">Xem đơn hàng của tôi</a> @* Link to user's orders, if MyOrders is implemented in PaymentController *@
+        }
+    </p>
+</div>
